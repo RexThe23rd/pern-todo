@@ -1,10 +1,11 @@
 import pkg from "pg";
 const { Pool } = pkg;
-import dotenv from "dotenv";
+import 'dotenv/config';
+// this almost gave me a heart attack when it wasnt working, but its fixed now -R
 
 const pool = new Pool({
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    password: process.env.DB_PASS,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     database: process.env.DB_NAME,
