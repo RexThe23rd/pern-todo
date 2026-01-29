@@ -1,14 +1,16 @@
 import { use, useEffect, useState } from "react";
 import axios from "axios";
+import { MdModeEditOutline, MdOutlineDone } from 'react-icons/md';
+import { FaTrash } from 'react-icons/fa6'
 
 function App() {
 
   const [description, setDescription] = useState("");
   const [todos, setTodos] = useState([]);
-  const [editTodo, setEditTodo] = useState(null);
+  const [editingTodo, setEditingTodo] = useState(null);
   const [editedText, setEditedText] = useState("");
 
-//functionality (boring stuff)
+  //functionality (boring stuff)
   //getting the todos
   const getTodos = async () => {
     try {
@@ -16,7 +18,7 @@ function App() {
       setTodos(res.data);
       console.log(res.data)
     } catch (err) {
-      console.log(err.message)      
+      console.log(err.message)
     }
   }
 
@@ -54,16 +56,40 @@ function App() {
             placeholder="What do you need to do?"
             required
           />
-          <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium cursor-pointer">Add Todo</button>
+          <button className="bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium cursor-pointer">Add Todo</button>
         </form>
         <div>
           {todos === 0 ? (
             <p className="text-gray-600">Nothing here yet!</p>
           ) : (
-            <div>
+            <div className="flex flex-col gap-y-4 bg-blue-50 p-2 rounded-lg">
               {todos.map((todo) => (
-                <div >
-                  <span>{todo.description}</span>
+                <div key={todo.todo_id} className="pb-4">
+                  {editingTodo === todo.todo_id ? (
+                    <div>
+                      <input type="text" value={editedText} />
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center  bg-blue-100 rounded-lg p-1">
+                      <div className="flex items-center gap-x-4">
+                        <button className={`h-6 w-6 border-2 rounded-full flex items-center justify-center ${todo.completed ? "transition ease-in-out duration-300 bg-green-500 border-green-500 text-white" : "border-gray-400 transition ease-in-out duration-300 hover:border-blue-400"}`}>
+                          {todo.completed && <MdOutlineDone size={16} />}
+                        </button>
+                        <span>{todo.description}</span>
+                      </div>
+                      <div className="flex gap-x-2">
+                        <button onClick={() => {
+                          setEditingTodo(todo.todo_id);
+                          setEditedText(todo.description);
+                        }} className="p-2 text-blue-500 bg-blue-200 transition-colors ease-in duration-200 hover:text-blue-700 rounded-lg hover:bg-blue-300">
+                          <MdModeEditOutline />
+                        </button>
+                        <button className="p-2 text-red-500 bg-red-200 transition-colors ease-in duration-200 hover:text-red-700 rounded-lg hover:bg-red-300">
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -72,6 +98,5 @@ function App() {
       </div>
     </div>
   );
-}
-
+} // what is this stack of divs god damn
 export default App
