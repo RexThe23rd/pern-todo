@@ -2,6 +2,7 @@ import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { MdModeEditOutline, MdOutlineDone } from 'react-icons/md';
 import { FaTrash } from 'react-icons/fa6'
+import { IoClose } from 'react-icons/io5'
 
 function App() {
 
@@ -67,7 +68,11 @@ function App() {
                 <div key={todo.todo_id} className="pb-4">
                   {editingTodo === todo.todo_id ? (
                     <div>
-                      <input type="text" value={editedText} />
+                      <input className="flex w-full p-3 border-3 rounded-lg border-blue-200 outline-none focus:ring-2 focus:ring-blue-300 text-gray-700 shadow-inner" type="text" value={editedText} onChange={(e) => setEditedText(e.target.value)} />
+                      <div className="flex justify-end items-center">
+                        <button className="px-4 py-2 bg-green-500 text-white rounded-lg mr-2 mt-2 transition ease-in-out duration-300 hover:bg-green-600"><MdOutlineDone /></button>
+                        <button onClick={() => setEditingTodo(null)} className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2 mt-2 transition ease-in-out duration-300 hover:bg-red-600"><IoClose /></button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex justify-between items-center  bg-blue-100 rounded-lg p-1">
