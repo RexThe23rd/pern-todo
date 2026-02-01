@@ -42,6 +42,19 @@ function App() {
     }
   };
 
+  const saveEdit = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/todos/${id}`, {
+        description: editedText,
+      });
+      setEditingTodo(null);
+      setEditedText("");
+      getTodos();
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
   //WARNING! THE FOLLOWING CODE LOOKS REALLY MESSY. DONT JUDGE
   //the app (todo form, displaying the todos, the title, everything basically):
   return (
@@ -67,11 +80,11 @@ function App() {
               {todos.map((todo) => (
                 <div key={todo.todo_id} className="pb-4">
                   {editingTodo === todo.todo_id ? (
-                    <div>
-                      <input className="flex w-full p-3 border-3 rounded-lg border-blue-200 outline-none focus:ring-2 focus:ring-blue-300 text-gray-700 shadow-inner" type="text" value={editedText} onChange={(e) => setEditedText(e.target.value)} />
+                    <div className="flex items-center gap-x-3">
+                      <input className="flex-1 p-3 border-3 rounded-lg border-blue-200 outline-none focus:ring-2 focus:ring-blue-300 text-gray-700 shadow-inner" type="text" value={editedText} onChange={(e) => setEditedText(e.target.value)} />
                       <div className="flex justify-end items-center">
-                        <button className="px-4 py-2 bg-green-500 text-white rounded-lg mr-2 mt-2 transition ease-in-out duration-300 hover:bg-green-600"><MdOutlineDone /></button>
-                        <button onClick={() => setEditingTodo(null)} className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2 mt-2 transition ease-in-out duration-300 hover:bg-red-600"><IoClose /></button>
+                        <button onClick={() => saveEdit(todo.todo_id)} className="px-4 py-2 bg-green-500 text-white rounded-lg mr-2 transition ease-in-out duration-300 hover:bg-green-600"><MdOutlineDone /></button>
+                        <button onClick={() => setEditingTodo(null)} className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2 transition ease-in-out duration-300 hover:bg-red-600"><IoClose /></button>
                       </div>
                     </div>
                   ) : (
