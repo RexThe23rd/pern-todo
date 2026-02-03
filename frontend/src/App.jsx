@@ -17,7 +17,6 @@ function App() {
     try {
       const res = await axios.get("http://localhost:5000/todos");
       setTodos(res.data);
-      console.log(res.data)
     } catch (err) {
       console.log(err.message)
     }
@@ -55,6 +54,29 @@ function App() {
     }
   }
 
+  const deleteTodo = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/todos/${id}`);
+      setTodos(todos.filter((todo) => todo.todo_id !== id));
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
+  const toggleCompleted = async (id) => {
+    try {
+      const todo = todos.find((todo) => todo.todo_id === id);
+      await axios.put(`http://localhost:5000/todos/${id}`, {
+        description: todo.description,
+        completed: !todo.completed,
+      });
+      setTodos(todos.map((todo) => (todo.todo_id === id ? {...todo, completed: !todo.completed} : todo)));
+    } catch (err) {
+      console.log(err.message);
+      
+    }
+  }
+
   //WARNING! THE FOLLOWING CODE LOOKS REALLY MESSY. DONT JUDGE
   //the app (todo form, displaying the todos, the title, everything basically):
   return (
@@ -89,8 +111,8 @@ function App() {
                     </div>
                   ) : (
                     <div className="flex justify-between items-center  bg-blue-100 rounded-lg p-1">
-                      <div className="flex items-center gap-x-4">
-                        <button className={`h-6 w-6 border-2 rounded-full flex items-center justify-center ${todo.completed ? "transition ease-in-out duration-300 bg-green-500 border-green-500 text-white" : "border-gray-400 transition ease-in-out duration-300 hover:border-blue-400"}`}>
+                      <div className="flex items-center gap-x-4 overflow-hidden">
+                        <button onClick={() => toggleCompleted(todo.todo_id)} className={`shrink-0 h-6 w-6 border-2 rounded-full flex items-center justify-center ${todo.completed ? "transition ease-in-out duration-300 bg-green-500 border-green-500 text-white" : "border-gray-400 transition ease-in-out duration-300 hover:border-blue-400"}`}>
                           {todo.completed && <MdOutlineDone size={16} />}
                         </button>
                         <span>{todo.description}</span>
@@ -102,7 +124,7 @@ function App() {
                         }} className="p-2 text-blue-500 bg-blue-200 transition-colors ease-in duration-200 hover:text-blue-700 rounded-lg hover:bg-blue-300">
                           <MdModeEditOutline />
                         </button>
-                        <button className="p-2 text-red-500 bg-red-200 transition-colors ease-in duration-200 hover:text-red-700 rounded-lg hover:bg-red-300">
+                        <button onClick={() => {deleteTodo(todo.todo_id)}} className="p-2 text-red-500 bg-red-200 transition-colors ease-in duration-200 hover:text-red-700 rounded-lg hover:bg-red-300">
                           <FaTrash />
                         </button>
                       </div>
