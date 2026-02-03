@@ -138,5 +138,5 @@ function App() {
       </div>
     </div>
   );
-} // what is this stack of divs god damn
+} // what is this stack of divs
 export default App
