@@ -10,15 +10,22 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [editingTodo, setEditingTodo] = useState(null);
   const [editedText, setEditedText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null)
 
   //functionality (boring stuff)
   //getting the todos
   const getTodos = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const res = await axios.get("http://localhost:5000/todos");
       setTodos(res.data);
     } catch (err) {
       console.log(err.message)
+      setError("Failed to fetch todos. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -30,50 +37,68 @@ function App() {
   //submitting the form
   const onSubmitForm = async (e) => {
     e.preventDefault();
+    if (!description.trim()) return;
     try {
-      await axios.post("http://localhost:5000/todos", {
+      setError(null);
+      const res = await axios.post("http://localhost:5000/todos", {
         description, completed: false
       });
+      setTodos([...todos, res.data]);
       setDescription("");
-      getTodos()
     } catch (err) {
       console.log(err.message);
+      setError("Failed to add todo. Please try again.");
     }
   };
 
   const saveEdit = async (id) => {
     try {
+      setError(null);
+
+      const currentTodo = todos.find((todo) => todo.todo_id === id);
+      const trimmedText = editedText.trim();
+
+      if (currentTodo.description === trimmedText) {
+        setEditingTodo(null);
+        setEditedText("");
+        return;
+      }
+
       await axios.put(`http://localhost:5000/todos/${id}`, {
         description: editedText,
       });
       setEditingTodo(null);
       setEditedText("");
-      getTodos();
+      setTodos(todos.map((todo) => todo.todo_id === id ? { ...todo, description: editedText, completed: false } : todo));
     } catch (err) {
+      setError("Failed to update todo. Please try again.");
       console.log(err.message);
     }
   }
 
   const deleteTodo = async (id) => {
     try {
+      setError(null)
       await axios.delete(`http://localhost:5000/todos/${id}`);
       setTodos(todos.filter((todo) => todo.todo_id !== id));
     } catch (err) {
       console.log(err.message);
+      setError("Failed to delete todo. Please try again.");
     }
   }
 
   const toggleCompleted = async (id) => {
     try {
+      setError(null)
       const todo = todos.find((todo) => todo.todo_id === id);
       await axios.put(`http://localhost:5000/todos/${id}`, {
         description: todo.description,
         completed: !todo.completed,
       });
-      setTodos(todos.map((todo) => (todo.todo_id === id ? {...todo, completed: !todo.completed} : todo)));
+      setTodos(todos.map((todo) => (todo.todo_id === id ? { ...todo, completed: !todo.completed } : todo)));
     } catch (err) {
       console.log(err.message);
-      
+      setError("Failed to update todo. Please try again.");
     }
   }
 
@@ -83,6 +108,11 @@ function App() {
     <div className="min-h-screen bg-gray-800 flex justify-center items-center p-4">
       <div className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-lg p-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">PERN TODO APP</h1>
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {error}
+          </div>
+        )}
         <form onSubmit={onSubmitForm} className="flex items-center gap-2 shadow-sm border p-2 rounded-lg mb-6">
           <input
             className="flex-1 outline-none px-3 py-2 text-gray-700 placeholder-gray-400"
@@ -95,7 +125,11 @@ function App() {
           <button className="bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium cursor-pointer">Add Todo</button>
         </form>
         <div>
-          {todos === 0 ? (
+          {loading ? (
+            <div>
+              <p className="text-gray-600">Loading todos...</p>
+            </div>
+          ) : todos === 0 ? (
             <p className="text-gray-600">Nothing here yet!</p>
           ) : (
             <div className="flex flex-col gap-y-4 bg-blue-50 p-2 rounded-lg">
@@ -124,7 +158,7 @@ function App() {
                         }} className="p-2 text-blue-500 bg-blue-200 transition-colors ease-in duration-200 hover:text-blue-700 rounded-lg hover:bg-blue-300">
                           <MdModeEditOutline />
                         </button>
-                        <button onClick={() => {deleteTodo(todo.todo_id)}} className="p-2 text-red-500 bg-red-200 transition-colors ease-in duration-200 hover:text-red-700 rounded-lg hover:bg-red-300">
+                        <button onClick={() => { deleteTodo(todo.todo_id) }} className="p-2 text-red-500 bg-red-200 transition-colors ease-in duration-200 hover:text-red-700 rounded-lg hover:bg-red-300">
                           <FaTrash />
                         </button>
                       </div>
