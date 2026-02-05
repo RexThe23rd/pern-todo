@@ -16,4 +16,21 @@ const pool = new Pool(
     }
 );
 
+const initDB = async () => {
+    try {
+        await pool.query(`
+        CREATE TABLE IF NOT EXISTS todo (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        completed BOOLEAN DEFAULT false
+      );
+    `);
+        console.log("Todos table ready");
+    } catch (err) {
+        console.error("DB init failed:", err);
+    }
+};
+
+initDB();
+
 export default pool;
