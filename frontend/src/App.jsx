@@ -20,7 +20,7 @@ function App() {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get("http://localhost:5000/todos");
+      const res = await axios.get("https://pern-todo-nqmp.onrender.com/todos");
       setTodos(res.data);
     } catch (err) {
       console.log(err.message)
@@ -41,7 +41,7 @@ function App() {
     if (!description.trim()) return;
     try {
       setError(null);
-      const res = await axios.post("http://localhost:5000/todos", {
+      const res = await axios.post("https://pern-todo-nqmp.onrender.com/todos", {
         description, completed: false
       });
       setTodos([...todos, res.data]);
@@ -65,7 +65,7 @@ function App() {
         return;
       }
 
-      await axios.put(`http://localhost:5000/todos/${id}`, {
+      await axios.put(`https://pern-todo-nqmp.onrender.com/todos/${id}`, {
         description: editedText,
       });
       setEditingTodo(null);
@@ -80,7 +80,7 @@ function App() {
   const deleteTodo = async (id) => {
     try {
       setError(null)
-      await axios.delete(`http://localhost:5000/todos/${id}`);
+      await axios.delete(`https://pern-todo-nqmp.onrender.com/todos/${id}`);
       setTodos(todos.filter((todo) => todo.todo_id !== id));
     } catch (err) {
       console.log(err.message);
@@ -92,7 +92,7 @@ function App() {
     try {
       setError(null)
       const todo = todos.find((todo) => todo.todo_id === id);
-      await axios.put(`http://localhost:5000/todos/${id}`, {
+      await axios.put(`https://pern-todo-nqmp.onrender.com/todos/${id}`, {
         description: todo.description,
         completed: !todo.completed,
       });

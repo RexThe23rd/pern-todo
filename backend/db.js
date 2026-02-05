@@ -4,17 +4,16 @@ import 'dotenv/config';
 // this almost gave me a heart attack when it wasnt working, but its fixed now -R
 
 const pool = new Pool(
-  process.env.DATABASE_URL
-    ? {
+    process.env.DATABASE_URL ? {
         connectionString: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false },
-      } : {
+    } : {
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         database: process.env.DB_NAME,
-      }
+    }
 );
 
 export default pool;
