@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import todoRoutes from './routes/todos.js'
+import pool from "./db.js";
 
 const app = express();
 
