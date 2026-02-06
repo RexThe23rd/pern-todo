@@ -16,22 +16,4 @@ const pool = new Pool(
     }
 );
 
-const initDB = async () => {
-    try {
-        await pool.query(`
-      DROP TABLE IF EXISTS todos;
-
-      CREATE TABLE IF NOT EXISTS todo (
-        todo_id SERIAL PRIMARY KEY,
-        description TEXT NOT NULL,
-        completed BOOLEAN DEFAULT false
-      );
-    `);
-    } catch (err) {
-        console.error("DB init failed:", err);
-    }
-};
-
-initDB();
-
 export default pool;
