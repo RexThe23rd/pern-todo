@@ -19,7 +19,9 @@ const pool = new Pool(
 const initDB = async () => {
     try {
         await pool.query(`
-        CREATE TABLE IF NOT EXISTS todo (
+      DROP TABLE IF EXISTS todos;
+
+      CREATE TABLE IF NOT EXISTS todo (
         todo_id SERIAL PRIMARY KEY,
         description TEXT NOT NULL,
         completed BOOLEAN DEFAULT false
